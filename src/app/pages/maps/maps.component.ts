@@ -30,16 +30,21 @@ export class MapsComponent implements OnInit {
     });
   }
 
-  addTile(azulejo) {
-    fetch( azulejo.url )
+  addTile(azulejo): Promise<any> {
+    return new Promise( (acept, reject) => {
+        fetch( azulejo.url )
         .then( image => image.blob() )
         .then( image => {
             this.db.add('tiles', image, azulejo.url ).then(
                 () => {
-                    console.log('add azulejo done: ', azulejo);
+                    acept();
+                },
+                () => {
+                    reject();
                 }
             );
         });
+    });
   }
 
   map() {
@@ -99,12 +104,14 @@ export class MapsComponent implements OnInit {
             return this.db.getByKey('tiles', key);
         },
         saveTiles: (tileUrls: any) => {
+            const promises = [];
             for (const tile of tileUrls) {
-                this.addTile( tile );
+                 promises.push( this.addTile( tile ) );
             }
+            return Promise.all( promises ).then( () => alert('azulejos descargados') );
         },
         clear: () => {
-            this.db.clear('tiles');
+            return this.db.clear('tiles');
         }
     };
   }
