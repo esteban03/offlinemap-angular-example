@@ -96,7 +96,7 @@ export class MapsComponent implements OnInit {
   tilesDb() {
     return {
         getItem: (key: any) => {
-            this.db.getByKey('tiles', key);
+            return this.db.getByKey('tiles', key);
         },
         saveTiles: (tileUrls: any) => {
             for (const tile of tileUrls) {
